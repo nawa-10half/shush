@@ -75,6 +75,31 @@ pre-push hook が shush scan を実行
 - `shush install-hooks` でpre-push hookとClaude hooksを一括セットアップ
 - **登録していないキーは検出できない**という前提はある（自分の金庫に登録したキーを守るツール）
 
+## ユースケース：.envだけでなく認証ファイルも置き換えられる
+
+`.env`のAPIキー保護だけでなく、`~/.aws/credentials` のような**平文でディスクに存在し続ける認証ファイル**も管理対象にできる。
+
+| | `.env` | `~/.aws/credentials` |
+|---|---|---|
+| リスク | gitへの誤コミット | 平文でディスクに存在し続ける |
+| 読まれる可能性 | push時 | マルウェア・悪意あるスクリプト・AIエージェント |
+| 暗号化 | なし | なし |
+
+AWS CLIは環境変数を`~/.aws/credentials`より優先する仕様なので、そのままshushで置き換えられる：
+
+```bash
+# shushの金庫にAWS認証情報を登録
+shush add aws-key AKIAIOSFODNN7EXAMPLE
+shush add aws-secret wJalrXUtnFEMI/K7MDENG/bPQRfiCYEX
+
+# ~/.aws/credentialsを使わずに実行（環境変数として注入）
+shush run aws s3 ls
+shush run cdk deploy
+```
+
+**`~/.aws/credentials` を空にしてshushだけで一元管理できる。**
+VibeCodingでAIエージェントが `cat ~/.aws/credentials` してしまうリスクも排除できる。
+
 ## v2以降の候補機能
 
 - チーム共有（`shush share / receive`）
