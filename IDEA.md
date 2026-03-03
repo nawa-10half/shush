@@ -49,6 +49,32 @@
 - [ ] `shush scan` — 生のシークレット値を検出
 - [ ] `shush install-hooks` — git + Claude hooksを自動設定
 
+## scan機能の設計詳細
+
+`shush scan` はパターンマッチ（`sk-`で始まる等）ではなく、**金庫に登録された実際の値と照合**するのが差別化ポイント。
+
+```
+git push 実行
+    ↓
+pre-push hook が shush scan を実行
+    ↓
+金庫の実値とコード全体を照合
+    ↓
+検出なし → そのままpush ✅
+検出あり → 警告 & ブロック ❌
+
+⚠️  shush: Secret detected before push!
+    File: src/api.ts:12
+    Key:  OPENAI_KEY (matches vault value)
+
+    Run `shush run` to inject secrets safely.
+    Commit aborted.
+```
+
+- `.env` ファイルだけでなく、**ソースコードへの直書き**（VibeCodingでAIがやりがち）も検出できる
+- `shush install-hooks` でpre-push hookとClaude hooksを一括セットアップ
+- **登録していないキーは検出できない**という前提はある（自分の金庫に登録したキーを守るツール）
+
 ## v2以降の候補機能
 
 - チーム共有（`shush share / receive`）
