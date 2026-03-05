@@ -18,7 +18,7 @@ pub struct Vault {
 }
 
 impl Vault {
-    /// Open or initialize the vault at ~/.shush/.
+    /// Open or initialize the vault at ~/.kagienv/.
     pub fn open() -> Result<Self> {
         let vault_dir = Self::vault_dir()?;
         let keys_dir = vault_dir.join("keys");
@@ -26,18 +26,18 @@ impl Vault {
         let db_path = vault_dir.join("vault.db");
 
         if !vault_dir.exists() {
-            fs::create_dir_all(&vault_dir).context("Failed to create ~/.shush/")?;
+            fs::create_dir_all(&vault_dir).context("Failed to create ~/.kagienv/")?;
             Self::set_dir_permissions(&vault_dir)?;
         }
         if !keys_dir.exists() {
-            fs::create_dir_all(&keys_dir).context("Failed to create ~/.shush/keys/")?;
+            fs::create_dir_all(&keys_dir).context("Failed to create ~/.kagienv/keys/")?;
             Self::set_dir_permissions(&keys_dir)?;
         }
 
         let identity = if identity_path.exists() {
             crypto::load_identity(&identity_path)?
         } else {
-            eprintln!("Initializing shush vault at {}...", vault_dir.display());
+            eprintln!("Initializing kagienv vault at {}...", vault_dir.display());
             let id = crypto::generate_identity(&identity_path)?;
             Self::set_file_permissions(&identity_path)?;
             eprintln!("Generated new age keypair.");
@@ -89,7 +89,7 @@ impl Vault {
 
     fn vault_dir() -> Result<PathBuf> {
         let home = dirs::home_dir().context("Could not determine home directory")?;
-        Ok(home.join(".shush"))
+        Ok(home.join(".kagienv"))
     }
 
     #[cfg(unix)]

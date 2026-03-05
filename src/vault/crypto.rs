@@ -131,7 +131,7 @@ fn parse_identity_key(text: &str) -> Result<Identity> {
 // ---------------------------------------------------------------------------
 
 fn should_use_keychain() -> bool {
-    if std::env::var("SHUSH_USE_PASSWORD").is_ok() {
+    if std::env::var("KAGIENV_USE_PASSWORD").is_ok() {
         return false;
     }
     cfg!(target_os = "macos")
@@ -164,7 +164,7 @@ fn migrate_plaintext_identity(path: &Path, identity: &Identity) -> Result<()> {
 // ---------------------------------------------------------------------------
 
 #[cfg(target_os = "macos")]
-const KEYCHAIN_SERVICE: &str = "shush";
+const KEYCHAIN_SERVICE: &str = "kagienv";
 #[cfg(target_os = "macos")]
 const KEYCHAIN_ACCOUNT: &str = "identity";
 

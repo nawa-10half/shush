@@ -1,4 +1,4 @@
-# shush — アイデアメモ
+# kagienv — アイデアメモ
 
 ## 発想の起点
 
@@ -12,7 +12,7 @@
 
 ```
 プロジェクト内:   OPENAI_KEY=@vault:openai   ← pushしても無害
-ローカル金庫:     openai → sk-abc123...       ← ~/.shush/ にのみ存在
+ローカル金庫:     openai → sk-abc123...       ← ~/.kagienv/ にのみ存在
 ```
 
 ## 差別化ポイント
@@ -42,37 +42,37 @@
 
 ## MVP スコープ（v0.1）
 
-- [ ] `shush add <name> <value>` — シークレット追加
-- [ ] `shush list` — 一覧表示（値は表示しない）
-- [ ] `shush delete <name>` — 削除
-- [ ] `shush run <command>` — 環境変数注入して実行
-- [ ] `shush scan` — 生のシークレット値を検出
-- [ ] `shush install-hooks` — git + Claude hooksを自動設定
+- [ ] `kagienv add <name> <value>` — シークレット追加
+- [ ] `kagienv list` — 一覧表示（値は表示しない）
+- [ ] `kagienv delete <name>` — 削除
+- [ ] `kagienv run <command>` — 環境変数注入して実行
+- [ ] `kagienv scan` — 生のシークレット値を検出
+- [ ] `kagienv install-hooks` — git + Claude hooksを自動設定
 
 ## scan機能の設計詳細
 
-`shush scan` はパターンマッチ（`sk-`で始まる等）ではなく、**金庫に登録された実際の値と照合**するのが差別化ポイント。
+`kagienv scan` はパターンマッチ（`sk-`で始まる等）ではなく、**金庫に登録された実際の値と照合**するのが差別化ポイント。
 
 ```
 git push 実行
     ↓
-pre-push hook が shush scan を実行
+pre-push hook が kagienv scan を実行
     ↓
 金庫の実値とコード全体を照合
     ↓
 検出なし → そのままpush ✅
 検出あり → 警告 & ブロック ❌
 
-⚠️  shush: Secret detected before push!
+⚠️  kagienv: Secret detected before push!
     File: src/api.ts:12
     Key:  OPENAI_KEY (matches vault value)
 
-    Run `shush run` to inject secrets safely.
+    Run `kagienv run` to inject secrets safely.
     Commit aborted.
 ```
 
 - `.env` ファイルだけでなく、**ソースコードへの直書き**（VibeCodingでAIがやりがち）も検出できる
-- `shush install-hooks` でpre-push hookとClaude hooksを一括セットアップ
+- `kagienv install-hooks` でpre-push hookとClaude hooksを一括セットアップ
 - **登録していないキーは検出できない**という前提はある（自分の金庫に登録したキーを守るツール）
 
 ## ユースケース：.envだけでなく認証ファイルも置き換えられる
@@ -85,24 +85,24 @@ pre-push hook が shush scan を実行
 | 読まれる可能性 | push時 | マルウェア・悪意あるスクリプト・AIエージェント |
 | 暗号化 | なし | なし |
 
-AWS CLIは環境変数を`~/.aws/credentials`より優先する仕様なので、そのままshushで置き換えられる：
+AWS CLIは環境変数を`~/.aws/credentials`より優先する仕様なので、そのままkagienvで置き換えられる：
 
 ```bash
-# shushの金庫にAWS認証情報を登録
-shush add aws-key AKIAIOSFODNN7EXAMPLE
-shush add aws-secret wJalrXUtnFEMI/K7MDENG/bPQRfiCYEX
+# kagienvの金庫にAWS認証情報を登録
+kagienv add aws-key AKIAIOSFODNN7EXAMPLE
+kagienv add aws-secret wJalrXUtnFEMI/K7MDENG/bPQRfiCYEX
 
 # ~/.aws/credentialsを使わずに実行（環境変数として注入）
-shush run aws s3 ls
-shush run cdk deploy
+kagienv run aws s3 ls
+kagienv run cdk deploy
 ```
 
-**`~/.aws/credentials` を空にしてshushだけで一元管理できる。**
+**`~/.aws/credentials` を空にしてkagienvだけで一元管理できる。**
 VibeCodingでAIエージェントが `cat ~/.aws/credentials` してしまうリスクも排除できる。
 
 ## v2以降の候補機能
 
-- チーム共有（`shush share / receive`）
+- チーム共有（`kagienv share / receive`）
 - `.vault.team` によるgit経由のチーム同期
 - スコープ付きトークン（プロジェクト限定、有効期限）
 - Cursor / GitHub Copilot hooks対応
@@ -111,7 +111,7 @@ VibeCodingでAIエージェントが `cat ~/.aws/credentials` してしまうリ
 
 - **OSS**（MIT License）
 - マネタイズなし（まず使われるものを作る）
-- 配布: `cargo install shush` / Homebrew tap
+- 配布: `cargo install kagienv` / Homebrew tap
 
 ## 競合との比較
 
@@ -120,7 +120,7 @@ VibeCodingでAIエージェントが `cat ~/.aws/credentials` してしまうリ
 | KeePass | ✅ | ❌ | ❌ | △ |
 | Doppler | ❌ | ✅ | △ | ✅ |
 | HashiCorp Vault | △ | ❌ | ❌ | ✅ |
-| **shush** | ✅ | ✅ | ✅ | ✅ |
+| **kagienv** | ✅ | ✅ | ✅ | ✅ |
 
 ## 次のステップ候補
 

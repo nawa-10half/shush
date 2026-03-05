@@ -6,8 +6,8 @@ build:
 	cargo build --release
 
 install: build
-	cp target/release/shush $(INSTALL_DIR)/shush
-	@echo "Installed shush to $(INSTALL_DIR)/shush"
+	cp target/release/kagienv $(INSTALL_DIR)/kagienv
+	@echo "Installed kagienv to $(INSTALL_DIR)/kagienv"
 
 clean:
 	cargo clean

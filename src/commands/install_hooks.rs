@@ -5,18 +5,18 @@ use std::path::{Path, PathBuf};
 use anyhow::{Context, Result};
 
 const PRE_PUSH_HOOK: &str = r#"#!/bin/sh
-# shush pre-push hook — scans for hardcoded secrets before push
-if command -v shush >/dev/null 2>&1; then
-    shush scan
+# kagienv pre-push hook — scans for hardcoded secrets before push
+if command -v kagienv >/dev/null 2>&1; then
+    kagienv scan
     if [ $? -ne 0 ]; then
         echo ""
-        echo "Push blocked by shush. Fix the issues above before pushing."
+        echo "Push blocked by kagienv. Fix the issues above before pushing."
         exit 1
     fi
 fi
 "#;
 
-const SHUSH_MARKER: &str = "shush scan";
+const KAGIENV_MARKER: &str = "kagienv scan";
 
 pub fn execute() -> anyhow::Result<()> {
     let git_dir = find_git_dir()?;
@@ -49,14 +49,14 @@ fn install_pre_push_hook(git_dir: &Path) -> Result<()> {
 
     if hook_path.exists() {
         let existing = fs::read_to_string(&hook_path)?;
-        if existing.contains(SHUSH_MARKER) {
-            println!("[git] pre-push hook already contains shush scan. Skipping.");
+        if existing.contains(KAGIENV_MARKER) {
+            println!("[git] pre-push hook already contains kagienv scan. Skipping.");
             return Ok(());
         }
         // Append to existing hook
         let updated = format!("{}\n{}", existing.trim_end(), PRE_PUSH_HOOK);
         fs::write(&hook_path, updated)?;
-        println!("[git] Appended shush scan to existing pre-push hook.");
+        println!("[git] Appended kagienv scan to existing pre-push hook.");
     } else {
         fs::write(&hook_path, PRE_PUSH_HOOK)?;
         fs::set_permissions(&hook_path, fs::Permissions::from_mode(0o755))?;
@@ -78,8 +78,8 @@ fn install_claude_hooks() -> Result<()> {
 
     if settings_path.exists() {
         let existing = fs::read_to_string(&settings_path)?;
-        if existing.contains(SHUSH_MARKER) {
-            println!("[claude] Claude hooks already contain shush scan. Skipping.");
+        if existing.contains(KAGIENV_MARKER) {
+            println!("[claude] Claude hooks already contain kagienv scan. Skipping.");
             return Ok(());
         }
         println!(
@@ -105,7 +105,7 @@ fn claude_hooks_json() -> &'static str {
         "hooks": [
           {
             "type": "command",
-            "command": "shush scan"
+            "command": "kagienv scan"
           }
         ]
       }

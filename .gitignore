@@ -9,6 +9,9 @@ Cargo.lock
 .vscode/
 .idea/
 
-# shush自身のvaultファイル（念のため）
+# docs（ローカル参照用）
+/docs
+
+# kagienv自身のvaultファイル（念のため）
 *.db
 *.sock

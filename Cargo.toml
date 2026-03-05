@@ -1,5 +1,5 @@
 [package]
-name = "shush"
+name = "kagienv"
 version = "0.1.0"
 edition = "2024"
 description = "A local-first secret manager for developers"

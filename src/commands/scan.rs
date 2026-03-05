@@ -6,7 +6,7 @@ use anyhow::Result;
 
 use crate::vault::Vault;
 
-const SKIP_DIRS: &[&str] = &[".git", ".shush", "target", "node_modules", ".next", "__pycache__"];
+const SKIP_DIRS: &[&str] = &[".git", ".kagienv", "target", "node_modules", ".next", "__pycache__"];
 
 struct Finding {
     file: String,
@@ -47,12 +47,12 @@ pub fn execute() -> Result<()> {
     if findings.is_empty() {
         println!("No hardcoded secrets detected.");
     } else {
-        eprintln!("\n\u{26a0}  shush: {} secret(s) detected!\n", findings.len());
+        eprintln!("\n\u{26a0}  kagienv: {} secret(s) detected!\n", findings.len());
         for f in &findings {
             eprintln!("    File: {}:{}", f.file, f.line_number);
             eprintln!("    Key:  {} (matches vault value)\n", f.secret_name);
         }
-        eprintln!("    Run `shush run <command>` to inject secrets safely.");
+        eprintln!("    Run `kagienv run <command>` to inject secrets safely.");
         process::exit(1);
     }
 
